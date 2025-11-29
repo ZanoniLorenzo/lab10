@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.guava:guava:33.5.0-jre")
     // The BOM (Bill of Materials) synchronizes all the versions of Junit coherently.
     testImplementation(platform("org.junit:junit-bom:6.0.1"))
     // The annotations, assertions and other elements we want to have access to when compiling our tests.

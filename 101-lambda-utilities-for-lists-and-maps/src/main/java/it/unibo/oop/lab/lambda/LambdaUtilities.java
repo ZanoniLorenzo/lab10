@@ -2,6 +2,7 @@ package it.unibo.oop.lab.lambda;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,9 +13,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.util.Collections.emptyList;
-import static java.util.Collections.emptyMap;
+import com.google.common.collect.Sets;
 
 /**
  * This class will contain four utility functions on lists and maps, of which the first one is provided as example.
@@ -64,7 +63,9 @@ public final class LambdaUtilities {
         /*
          * Suggestion: consider Optional.filter
          */
-        return emptyList();
+        final List<Optional<T>> result = new LinkedList<>();
+        list.forEach(item -> result.add(Optional.of(item).filter(pre)));
+        return List.copyOf(result);
     }
 
     /**
@@ -83,7 +84,9 @@ public final class LambdaUtilities {
         /*
          * Suggestion: consider Map.merge
          */
-        return emptyMap();
+        final Map<R, Set<T>> result = new HashMap<>();
+        list.forEach(item -> result.merge(op.apply(item), Set.of(item), Sets::union));
+        return result;
     }
 
     /**
@@ -104,7 +107,9 @@ public final class LambdaUtilities {
          *
          * Keep in mind that a map can be iterated through its forEach method
          */
-        return emptyMap();
+        final Map<K, V> result = new HashMap<>();
+        map.forEach((key, item) -> result.put(key, item.orElse(def.get())));
+        return result;
     }
 
     /**
