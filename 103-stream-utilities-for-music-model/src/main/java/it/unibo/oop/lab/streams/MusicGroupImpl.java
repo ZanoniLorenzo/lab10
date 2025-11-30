@@ -31,42 +31,94 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return null;
+        final Stream<String> songNames = this.songs.stream().map(Song::getSongName);
+        return songNames.sorted();
     }
 
     @Override
     public Stream<String> albumNames() {
-        return null;
+        return this.albums.keySet().stream();
     }
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return null;
+        final Set<String> yearAlbums = new HashSet<>();
+        for (final Map.Entry<String, Integer> entry : this.albums.entrySet()) {
+            if (entry.getValue().equals(year)) {
+                yearAlbums.add(entry.getKey());
+            }
+        }
+        return yearAlbums.stream();
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return -1;
+        int counter = 0;
+        for (final Song s : this.songs) {
+            if (s.getAlbumName().equals(Optional.of(albumName))) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     @Override
     public int countSongsInNoAlbum() {
-        return -1;
+        int counter = 0;
+        for (final Song s : this.songs) {
+            if (s.getAlbumName().isEmpty()) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return OptionalDouble.empty();
+        int counter = 0;
+        double duration = 0;
+        for (final Song s : this.songs) {
+            if (s.getAlbumName().equals(Optional.of(albumName))) {
+                duration = duration + s.getDuration();
+                counter++;
+            }
+        }
+        duration = duration / counter;
+        return OptionalDouble.of(duration);
     }
 
     @Override
     public Optional<String> longestSong() {
-        return Optional.empty();
+        Song longestSong = new Song("", null, 0);
+        for (final Song s : this.songs) {
+            if (s.getDuration() > longestSong.getDuration()) {
+                longestSong = s;
+            }
+        }
+        return Optional.of(longestSong.getSongName());
     }
 
     @Override
     public Optional<String> longestAlbum() {
-        return Optional.empty();
+        final Map<String, Double> albumDurations = new HashMap<>();
+        for (final Map.Entry<String, Integer> entry : this.albums.entrySet()) {
+            double totalDuration = 0;
+            for (final Song s : this.songs) {
+                if (s.getAlbumName().equals(Optional.of(entry.getKey()))) {
+                    totalDuration = totalDuration + s.getDuration();
+                }
+            }
+            albumDurations.put(entry.getKey(), totalDuration);
+        }
+        double maxDuration = 0;
+        String longestAlbum = "";
+        for (final Map.Entry<String, Double> entry : albumDurations.entrySet()) {
+            if (entry.getValue() > maxDuration) {
+                maxDuration = entry.getValue();
+                longestAlbum = entry.getKey();
+            }
+        }
+        return Optional.of(longestAlbum);
     }
 
     private static final class Song {
